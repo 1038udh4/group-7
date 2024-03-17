@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accept Payment</title>
+    <style>
+        body {
+            background-color: #fff;
+            /* Dark background color */
+            color: #1f1f1f;
+            /* White text color */
+            font-family: Arial, sans-serif;
+            /* Font */
+            padding: 5% 20%;
+            /* Add padding for content */
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+        }
+        input[type="email"],
+        input[type="number"],
+        input[type="text"],
+        button {
+            /* Make inputs and button full width */
+            padding: 10px;
+            /* Add padding for inputs and button */
+            margin-bottom: 15px;
+            /* Add some space below inputs and button */
+            border: #242424 1px solid;
+            /* Remove default border */
+            border-radius: 5px;
+            /* Add border radius */
+            background-color: #fff;
+            /* Dark input background color */
+            color: #242424;
+            /* White text color */
+        }
+
+        button {
+            background-color: #019c5c;
+            width: 100%;
+            /* GIMPA green as button color */
+            cursor: pointer;
+            /* Change cursor to pointer on hover */
+            color: #fff;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #03623b;
+            /* Darker GIMPA green on hover */
+        }
+        .logo, .modal-content img{
+            width: auto; 
+            height: 150px; 
+            margin: auto;
+            margin-bottom: 20px;
+        }
+        .modal-content img{
+            width: 65px !important;
+            margin-bottom: 5px;
+        }
+        /* Styles for modal */
+        .modal {
+            display: none;
+            /* Hide modal by default */
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(40, 40, 40, 0.9);
+            padding-top: 20px;
+        }
+
+        .modal-content {
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            background-color: #fff;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #242424;
+            width: 50vw;
+            border-radius: 5px;
+            color: #242424;
+        }
+
+        .close {
+            color: #242424;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #242424;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        #successModal h2{
+            color:#03623b;
+        }
+        #errorModal h2{
+            color: rgb(116, 6, 6);
+            
+        }
+        @media only screen and (max-width: 600px) {
+
+            /* Adjustments for mobile devices */
+            input[type="email"],
+            input[type="number"],
+            input[type="text"],
+            button {
+                width: 100%;
+                /* Make inputs and button full width */
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <img src="assets/gimpa-logo.png" alt="GIMPA LOGO" class="logo">
+    <h1 style="text-align: center;">GIMPA Cafeteria Online Payment</h1>
+    <input type="email" id="email" name="email" placeholder="Enter your email">
+    <input type="number" id="amount" name="amount" placeholder="Enter amount in GHS">
+    <input type="text" name="reference" id="reference" placeholder="Please enter a reference without space">
+    <button onclick="payWithPaystack()">Make Payment</button>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <img src="assets/success.svg" alt="">
+            <h2>Payment successful</h2>
+            <p>Transaction reference: <span id="successReference"></span></p>
+        </div>
+    </div>
+
+    <!-- Error Modal -->
+    <div id="errorModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <img src="assets/error.svg" alt="">
+            <h2>Payment Error</h2>
+            <p>Transaction was not completed, window closed.</p>
+        </div>
+    </div>
+
+    <script src="https://js.paystack.co/v1/inline.js"></script>
+    <script>
+        function payWithPaystack() {
+    var email = document.getElementById('email').value;
+    var amount = document.getElementById('amount').value;
+    var reference = document.getElementById('reference').value;
+
+    var handler = PaystackPop.setup({
+        key: 'pk_live_9d41cf949c7dab425b52185aedaa1abe3b4f5751', // Replace with your Paystack public key
+        email: email,
+        amount: amount * 100, // Paystack expects amount in kobo (i.e., smallest currency unit)
+        currency: 'GHS', // Currency
+        ref: reference,
+        callback: function (response) {
+            // Display success modal
+            document.getElementById('successReference').innerText = response.reference;
+            document.getElementById('successModal').style.display = 'block';
+        },
+        onClose: function () {
+            // Display error modal
+            document.getElementById('errorModal').style.display = 'block';
+        }
+    });
+    handler.openIframe();
+}
+
+
+        function closeModal() {
+            // Close modals
+            document.getElementById('successModal').style.display = 'none';
+            document.getElementById('errorModal').style.display = 'none';
+        }
+    </script>
+</body>
